@@ -1,3 +1,7 @@
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
+
 const firebaseConfig = {
     apiKey: "AIzaSyBVU7Drhw6M-5dxSJc9m0kSJhW3R4f7TrQ",
     authDomain: "debate-website-b170d.firebaseapp.com",
@@ -8,4 +12,6 @@ const firebaseConfig = {
     appId: "1:156457005313:web:ca319d98cb775c5572eb00"
   };
 
-module.exports = firebaseConfig;
+  firebase.initializeApp(firebaseConfig);
+
+  export default firebase;
