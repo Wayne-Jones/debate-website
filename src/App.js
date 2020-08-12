@@ -28,7 +28,7 @@ function App() {
 
   useEffect(() => {
     getToDo();
-  }, [])
+  })
 
   return (
     <div className="App">
