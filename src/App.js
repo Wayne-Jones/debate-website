@@ -16,7 +16,20 @@ function App() {
     console.log('Added document with ID: ', res.id);
     setToDoList([...todoList, inputVal]);
   }
-  
+
+  const getToDo = async () => {
+    const querySnapshot = await db.collection('todos').get();
+    
+    querySnapshot.forEach(doc => {
+      setToDoList([...todoList, doc])
+      console.log(doc.id, '=>', doc.data());
+    });
+  }
+
+  useEffect(() => {
+    getToDo();
+  }, [])
+
   return (
     <div className="App">
       <form onSubmit={(e) => addToDo(e)}>
@@ -25,8 +38,8 @@ function App() {
       </form>
       
       <div>
-        {todoList.map((todo)=>{
-          return <li key={todo._id}>{todo}</li>
+        {todoList.map((doc)=>{
+          return <li key={doc.id}>{doc.data().todo}</li>
         })}
       </div>
     </div>
