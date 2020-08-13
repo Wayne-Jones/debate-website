@@ -2,10 +2,11 @@ import React, {useState, useEffect} from 'react';
 import firebase from './config';
 import './App.css';
 
-function App() {
-  const [todoList, setToDoList] = useState([]);
+const db = firebase.firestore();
 
-  const db = firebase.firestore();
+function App() {
+  
+  const [todoList, setToDoList] = useState([]);
 
   const addToDo = async (e) =>{
     e.preventDefault();
@@ -14,21 +15,35 @@ function App() {
       todo: inputVal,
     });
     console.log('Added document with ID: ', res.id);
-    setToDoList([...todoList, inputVal]);
-  }
-
-  const getToDo = async () => {
-    const querySnapshot = await db.collection('todos').get();
-    
-    querySnapshot.forEach(doc => {
-      setToDoList([...todoList, doc])
-      console.log(doc.id, '=>', doc.data());
-    });
   }
 
   useEffect(() => {
-    getToDo();
-  })
+    console.log("Loaded");
+    const unsubscribe = db.collection('todos').onSnapshot((snapshot) => {
+      // snapshot.docChanges().forEach((change) => {
+      //   console.log(change.doc.id);
+      //   if (change.type === "added") {
+      //     console.log("Added ", change.doc.data().todo);
+      //     setToDoList((oldState) => [...oldState, change.doc]);
+      //   }
+      //   if (change.type === "modified") {
+      //     console.log("Modify ", change.doc.data().todo);
+      //     todoList[change.doc.id]
+      //   }
+      //   if (change.type === "removed") {
+      //     console.log("Removed ", change.doc.data().todo);
+      //   }
+
+      // });
+
+      const changes = snapshot.docs.map((doc)=>{
+        return ({id: doc.id, ...doc.data()});
+      });
+      setToDoList(changes);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="App">
@@ -39,7 +54,7 @@ function App() {
       
       <div>
         {todoList.map((doc)=>{
-          return <li key={doc.id}>{doc.data().todo}</li>
+          return <li key={doc.id}>{doc.todo}</li>
         })}
       </div>
     </div>
